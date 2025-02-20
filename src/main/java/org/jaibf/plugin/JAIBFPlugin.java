@@ -61,6 +61,12 @@ public final class JAIBFPlugin extends JavaPlugin {
         inventories.put(plugin.getName(), documents);
         getSLF4JLogger().debug("Loaded {}, which now has {} entries.", inventoryName, documents.size());
     }
+    public void loadInventories(JavaPlugin plugin, String... inventories) {
+        getSLF4JLogger().debug("Loading mutltiple inventories for {}", plugin.getName());
+        for(String inventory : inventories) {
+            loadInventory(plugin, inventory);
+        }
+    }
 
     public Schema getSchema() {
         return schema;
