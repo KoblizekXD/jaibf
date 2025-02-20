@@ -1,0 +1,6 @@
+name: JustAnotherInventoryBuilderFramework
+version: 0.1.0
+main: org.jaibf.plugin.JAIBFPlugin
+description: A helper framework for plugins that need to create custom inventories with ease.
+api-version: '1.21.4'
+website: https://github.com/KoblizekXD/jaibf
