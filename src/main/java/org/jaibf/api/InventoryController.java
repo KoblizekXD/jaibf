@@ -1,5 +1,6 @@
 package org.jaibf.api;
 
+import org.bukkit.inventory.Inventory;
 import org.jaibf.api.container.ReadonlyContainerPreset;
 
 /**
@@ -23,6 +24,7 @@ import org.jaibf.api.container.ReadonlyContainerPreset;
 public abstract class InventoryController {
     
     private ReadonlyContainerPreset containerPreset;
+    private Inventory bukkitInventory;
     private String pageId;
     
     /**
@@ -44,5 +46,26 @@ public abstract class InventoryController {
      */
     public String getPage() {
         return pageId;
+    }
+
+    public void setContainerPreset(ReadonlyContainerPreset containerPreset) {
+        if (this.containerPreset != null) {
+            throw new IllegalStateException("Container preset can be only set during initialization");
+        }
+        this.containerPreset = containerPreset;
+    }
+    
+    private void reloadPage() {
+        if (pageId == null) {
+            pageId = containerPreset.pages().get(0).id();
+        }
+        ReadonlyContainerPreset.Page page = containerPreset.pages().stream()
+                .filter(p -> p.id().equals(pageId))
+                .findFirst().get();
+        for (ReadonlyContainerPreset.PageItem item : page.items()) {
+            int slotIndex = item.y() * 9 + item.x();
+            bukkitInventory.clear();
+            bukkitInventory.setItem(slotIndex, item.itemStack());
+        }
     }
 }

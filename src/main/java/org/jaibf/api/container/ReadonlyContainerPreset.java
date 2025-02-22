@@ -52,6 +52,8 @@ public record ReadonlyContainerPreset(String id, String title, Class<InventoryCo
             controllerClass = (Class<InventoryController>) Class.forName(document.getDocumentElement().getAttribute("class"));
         } catch (ClassNotFoundException e) {
             controllerClass = null;
+        } catch (ClassCastException e) {
+            throw new RuntimeException("Invalid controller class(must extend org.jaibf.api.InventoryController)", e);
         }
 
         List<Page> pageList = new ArrayList<>();

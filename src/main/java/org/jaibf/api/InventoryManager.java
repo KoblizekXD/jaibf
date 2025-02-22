@@ -1,9 +1,8 @@
 package org.jaibf.api;
 
-import org.bukkit.NamespacedKey;
 import org.bukkit.entity.HumanEntity;
-import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.jaibf.api.container.ReadonlyContainerPreset;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
@@ -19,20 +18,22 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 public final class InventoryManager {
     
-    public static final NamespacedKey OPEN_INVENTORY_KEY = new NamespacedKey("jaibf", "open_inventory");
     private static Validator schemaValidator;
     
     private final Logger logger;
     private final JavaPlugin plugin;
-    private final Map<String, Document> inventories;
+    private final Map<String, ReadonlyContainerPreset> inventories;
+    private final Map<UUID, InventoryController> controllers;
 
     private InventoryManager(JavaPlugin plugin) {
         this.plugin =    plugin;
         this.logger = LoggerFactory.getLogger(plugin.getName() + "/InventoryManager");
         this.inventories = new HashMap<>();
+        this.controllers = new HashMap<>();
     }
     
     public static InventoryManager forPlugin(JavaPlugin plugin) {
@@ -49,7 +50,8 @@ public final class InventoryManager {
                     if (schemaValidator != null) {
                         schemaValidator.validate(new DOMSource(document));
                     }
-                    inventories.put(name, document);
+                    ReadonlyContainerPreset from = ReadonlyContainerPreset.from(document);
+                    inventories.put(from.id(), from);
                 } catch (IOException e) {
                     logger.error("Failed to load inventory {}", name, e);
                 } catch (SAXException e) {
@@ -74,6 +76,17 @@ public final class InventoryManager {
      * @param id The id of the inventory to open
      */
     public void openInventory(HumanEntity entity, String id) {
-        entity.getPersistentDataContainer().set(OPEN_INVENTORY_KEY, PersistentDataType.STRING, id);
+        ReadonlyContainerPreset preset = inventories.get(id);
+        if (preset == null) {
+            logger.error("Inventory with id {} not found", id);
+            return;
+        }
+        UUID instanceId = entity.getUniqueId();
+        InventoryController controller = preset.createController();
+        controllers.put(instanceId, controller);
+    }
+    
+    Map<UUID, InventoryController> getActiveControllers() {
+        return controllers;
     }
 }
