@@ -5,7 +5,6 @@ import org.jaibf.api.InventoryController;
 import org.w3c.dom.Document;
 
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -42,13 +41,8 @@ public record ReadonlyContainerPreset(String onOpen, String id, String title, Cl
             return "PageItem(id=" + id + ", item=" + itemStack.getType() + ")";
         }
     }
-
-    @Override
-    public List<Page> pages() {
-        return Collections.unmodifiableList(pages);
-    }
     
-    public static void from(Document document) {
+    public static ReadonlyContainerPreset from(Document document) {
         
     }
 }

@@ -1,6 +1,8 @@
 package org.jaibf.api;
 
+import org.bukkit.NamespacedKey;
 import org.bukkit.entity.HumanEntity;
+import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,6 +22,7 @@ import java.util.Map;
 
 public final class InventoryManager {
     
+    public static final NamespacedKey OPEN_INVENTORY_KEY = new NamespacedKey("jaibf", "open_inventory");
     private static Validator schemaValidator;
     
     private final Logger logger;
@@ -63,7 +66,15 @@ public final class InventoryManager {
     public static void setSchema(Schema schema) {
         InventoryManager.schemaValidator = schema.newValidator();
     }
-    
-    public void openInventory(HumanEntity entity) {
+
+    /**
+     * Opens an inventory with given id for the player. The identifier
+     * may not equal to the name you provided in {@link #loadInventories(String...)}.
+     * The id is equal to the attribute "id" in the inventory XML file.
+     * @param entity The entity to open the inventory for
+     * @param id The id of the inventory to open
+     */
+    public void openInventory(HumanEntity entity, String id) {
+        entity.getPersistentDataContainer().set(OPEN_INVENTORY_KEY, PersistentDataType.STRING, id);
     }
 }
