@@ -1,5 +1,6 @@
 package org.jaibf.api;
 
+import org.bukkit.entity.HumanEntity;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -61,5 +62,8 @@ public final class InventoryManager {
     
     public static void setSchema(Schema schema) {
         InventoryManager.schemaValidator = schema.newValidator();
+    }
+    
+    public void openInventory(HumanEntity entity) {
     }
 }
