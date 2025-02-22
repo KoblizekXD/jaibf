@@ -16,7 +16,8 @@ import org.jaibf.api.container.ReadonlyContainerPreset;
  *         @Slot(value = "my_other_slot", page = "second_page")
  *         private ItemStack myOtherSlot;
  *     }
- *     }
+ *     }e
+ *
  * </p>
  */
 public abstract class InventoryController {

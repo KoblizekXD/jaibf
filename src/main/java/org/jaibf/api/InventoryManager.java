@@ -30,7 +30,7 @@ public final class InventoryManager {
     private final Map<String, Document> inventories;
 
     private InventoryManager(JavaPlugin plugin) {
-        this.plugin = plugin;
+        this.plugin =    plugin;
         this.logger = LoggerFactory.getLogger(plugin.getName() + "/InventoryManager");
         this.inventories = new HashMap<>();
     }
@@ -40,7 +40,6 @@ public final class InventoryManager {
         plugin.getServer().getPluginManager().registerEvents(new PluginInventoryEvents(inventoryManager, plugin), plugin);
         return inventoryManager;
     }
-    
     public void loadInventories(String... names) {
         try {
             DocumentBuilder documentBuilder = DocumentBuilderFactory.newInstance().newDocumentBuilder();

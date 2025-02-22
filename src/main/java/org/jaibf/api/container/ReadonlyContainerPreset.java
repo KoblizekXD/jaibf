@@ -1,15 +1,19 @@
 package org.jaibf.api.container;
 
+import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 import org.jaibf.api.InventoryController;
 import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.NodeList;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public record ReadonlyContainerPreset(String onOpen, String id, String title, Class<InventoryController> controller,
-                                      List<Page> pages, int height, String onClose) {
+public record ReadonlyContainerPreset(String id, String title, Class<InventoryController> controller,
+                                      List<Page> pages, int height, String onOpen, String onClose) {
 
     public record Page(String id, PageItem... items) {
         @Override
@@ -43,6 +47,46 @@ public record ReadonlyContainerPreset(String onOpen, String id, String title, Cl
     }
     
     public static ReadonlyContainerPreset from(Document document) {
-        
+        Class<InventoryController> controllerClass;
+        try {
+            controllerClass = (Class<InventoryController>) Class.forName(document.getDocumentElement().getAttribute("class"));
+        } catch (ClassNotFoundException e) {
+            controllerClass = null;
+        }
+
+        List<Page> pageList = new ArrayList<>();
+        NodeList pageNodes = document.getElementsByTagName("Page");
+
+        for (int i =  0; i < pageNodes.getLength(); i++) {
+            Element pageElement = (Element) pageNodes.item(i);
+            String pageId = pageElement.getAttribute("id");
+
+            List<PageItem> itemList = new ArrayList<>();
+            NodeList itemNodes = pageElement.getElementsByTagName("PageItem");
+            for (int j = 0; j < itemNodes.getLength(); j++) {
+                Element itemElement = (Element) itemNodes.item(j);
+                String itemId = itemElement.getAttribute("id");
+                int x = Integer.parseInt(itemElement.getAttribute("x"));
+                int y = Integer.parseInt(itemElement.getAttribute("y"));
+                String onClick = itemElement.getAttribute("onClick");
+                Material material = Material.matchMaterial(itemElement.getAttribute("material"));
+                if(material == null ){
+                    throw new RuntimeException("Invalid material" + itemElement.getAttribute("material"));
+                }
+                ItemStack itemStack = new ItemStack(material);
+
+                itemList.add(new PageItem(itemId, x, y, onClick, itemStack));
+            }
+            Page page = new Page(pageId, itemList.toArray(new PageItem[0]));
+            pageList.add(page);
+        }
+        return new ReadonlyContainerPreset(
+                document.getDocumentElement().getAttribute("id"),
+                document.getDocumentElement().getAttribute("title"),
+                controllerClass,
+                pageList,
+                Integer.parseInt(document.getDocumentElement().getAttribute("height")),
+                document.getDocumentElement().getAttribute("onOpen"),
+                document.getDocumentElement().getAttribute("onClose"));
     }
 }
