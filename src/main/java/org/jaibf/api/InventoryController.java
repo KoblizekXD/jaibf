@@ -61,7 +61,7 @@ public abstract class InventoryController {
         this.containerPreset = containerPreset;
     }
     
-    private void reloadPage() {
+    void reloadCurrent() {
         if (pageId == null) {
             pageId = containerPreset.pages().get(0).id();
         }

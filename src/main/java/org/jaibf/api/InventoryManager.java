@@ -85,6 +85,7 @@ public final class InventoryManager {
         UUID instanceId = entity.getUniqueId();
         try {
             InventoryController controller = preset.controller().getConstructor().newInstance();
+            controller.reloadCurrent();
             controllers.put(instanceId, controller);
         } catch (NoSuchMethodException | InstantiationException | IllegalAccessException | InvocationTargetException e) {
             plugin.getSLF4JLogger().error(
