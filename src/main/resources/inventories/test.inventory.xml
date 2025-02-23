@@ -1,0 +1,6 @@
+<Inventory onOpen="onOpen" id="test" title="Hello" height="4"
+           class="org.jaibf.plugin.TestInventory">
+    <Page>
+        <Item material="STONE" x="1" y="1" />
+    </Page>
+</Inventory>

@@ -105,4 +105,8 @@ public abstract class InventoryController {
     final ReadonlyContainerPreset getContainerPreset() {
         return containerPreset;
     }
+
+    final void setBukkitInventory(Inventory bukkitInventory) {
+        this.bukkitInventory = bukkitInventory;
+    }
 }

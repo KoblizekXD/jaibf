@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" targetNamespace="jaibf" xmlns="jaibf" elementFormDefault="qualified">
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified">
     <xs:element name="Inventory">
         <xs:complexType>
             <xs:sequence>
@@ -13,7 +13,7 @@
                                     </xs:choice>
                                     <xs:attribute name="id" type="xs:string" />
                                     <xs:attribute name="material" type="xs:string" use="required" />
-                                    <xs:attribute name="x" type="xs:int" default="0">
+                                    <xs:attribute name="x" default="0">
                                         <xs:simpleType>
                                             <xs:restriction base="xs:int">
                                                 <xs:minInclusive value="0"/>
@@ -21,7 +21,7 @@
                                             </xs:restriction>
                                         </xs:simpleType>
                                     </xs:attribute>
-                                    <xs:attribute name="y" type="xs:int" default="0">
+                                    <xs:attribute name="y" default="0">
                                         <xs:simpleType>
                                             <xs:restriction base="xs:int">
                                                 <xs:minInclusive value="0"/>
@@ -37,7 +37,7 @@
                     </xs:complexType>
                 </xs:element>
             </xs:sequence>
-            <xs:attribute name="height" type="xs:int">
+            <xs:attribute name="height">
                 <xs:simpleType>
                     <xs:restriction base="xs:int">
                         <xs:minInclusive value="1"/>
@@ -48,7 +48,6 @@
             <xs:attribute name="id" type="xs:string" use="required" />
             <xs:attribute name="title" type="xs:string" use="required" />
             <xs:attribute name="class" type="xs:string" use="required" />
-            <xs:attribute name="classRef" type="xs:string" use="required" />
             <xs:attribute name="onClose" type="xs:string" />
             <xs:attribute name="onOpen" type="xs:string" />
         </xs:complexType>

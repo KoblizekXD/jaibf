@@ -1,6 +1,9 @@
 package org.jaibf.api;
 
+import net.kyori.adventure.text.Component;
+import org.bukkit.Bukkit;
 import org.bukkit.entity.HumanEntity;
+import org.bukkit.inventory.Inventory;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jaibf.api.container.ReadonlyContainerPreset;
 import org.slf4j.Logger;
@@ -49,7 +52,7 @@ public final class InventoryManager {
                 try (InputStream inputStream = plugin.getResource("inventories/" + name + ".inventory.xml")) {
                     Document document = documentBuilder.parse(inputStream);
                     if (schemaValidator != null) {
-                        schemaValidator.validate(new DOMSource(document));
+                        schemaValidator.validate(new DOMSource(document.getDocumentElement()));
                     }
                     ReadonlyContainerPreset from = ReadonlyContainerPreset.from(document);
                     inventories.put(from.id(), from);
@@ -85,8 +88,12 @@ public final class InventoryManager {
         UUID instanceId = entity.getUniqueId();
         try {
             InventoryController controller = preset.controller().getConstructor().newInstance();
+            Inventory inventory = Bukkit.createInventory(entity, preset.height() * 9, Component.text(preset.title()));
+            controller.setContainerPreset(preset);
+            controller.setBukkitInventory(inventory);
             controller.reloadCurrent();
             controllers.put(instanceId, controller);
+            entity.openInventory(inventory);
         } catch (NoSuchMethodException | InstantiationException | IllegalAccessException | InvocationTargetException e) {
             plugin.getSLF4JLogger().error(
                     "Failed to instantiate controller class for inventory with id {}: {}", id, e.getMessage());

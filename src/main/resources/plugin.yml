@@ -4,3 +4,6 @@ main: org.jaibf.plugin.JAIBFPlugin
 description: A helper framework for plugins that need to create custom inventories with ease.
 api-version: '1.21.4'
 website: https://github.com/KoblizekXD/jaibf
+commands:
+  testinventory:
+    description: Test command for the inventory builder framework.
