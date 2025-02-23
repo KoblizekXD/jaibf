@@ -37,6 +37,19 @@ public record ReadonlyContainerPreset(String id, String title, Class<InventoryCo
         public String toString() {
             return "Page(id=" + id + ")" + Arrays.stream(items).map(PageItem::toString).collect(Collectors.joining(", ", "[", "]"));
         }
+        
+        public ItemStack getItemAt(int x, int y) {
+            return Arrays.stream(items).filter(item -> item.x() == x && item.y() == y)
+                    .findFirst()
+                    .map(PageItem::itemStack)
+                    .orElse(null);
+        }
+        
+        public ItemStack getItemById(String id) {
+            return Arrays.stream(items).filter(item -> item.id().equals(id)).findFirst()
+                    .map(PageItem::itemStack)
+                    .orElse(null);
+        }
     }
 
     public record PageItem(String id, int x, int y, String onClick, ItemStack itemStack) {
@@ -44,6 +57,11 @@ public record ReadonlyContainerPreset(String id, String title, Class<InventoryCo
         public String toString() {
             return "PageItem(id=" + id + ", item=" + itemStack.getType() + ")";
         }
+    }
+    
+    public Page findPageById(String id) {
+        if (id == null) return pages.getFirst();
+        return pages.stream().filter(page -> page.id().equals(id)).findFirst().orElse(null);
     }
     
     public static ReadonlyContainerPreset from(Document document) {

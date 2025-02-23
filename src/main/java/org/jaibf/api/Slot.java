@@ -1,5 +1,7 @@
 package org.jaibf.api;
 
+import java.lang.annotation.*;
+
 /**
  * This annotation is used to bind a field into a schema-defined slot.
  * The field must be a field with a type that is one of the following:
@@ -8,6 +10,9 @@ package org.jaibf.api;
  *     <li>{@link org.bukkit.inventory.ItemStack}</li>
  * </ul>
  */
+@Retention(RetentionPolicy.RUNTIME)
+@Target(ElementType.FIELD)
+@Documented
 public @interface Slot {
     /**
      * Corresponds to the identifier of the slot in the schema.

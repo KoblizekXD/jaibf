@@ -16,6 +16,7 @@ import javax.xml.validation.Schema;
 import javax.xml.validation.Validator;
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -30,7 +31,7 @@ public final class InventoryManager {
     private final Map<UUID, InventoryController> controllers;
 
     private InventoryManager(JavaPlugin plugin) {
-        this.plugin =    plugin;
+        this.plugin = plugin;
         this.logger = LoggerFactory.getLogger(plugin.getName() + "/InventoryManager");
         this.inventories = new HashMap<>();
         this.controllers = new HashMap<>();
@@ -82,11 +83,21 @@ public final class InventoryManager {
             return;
         }
         UUID instanceId = entity.getUniqueId();
-        InventoryController controller = preset.createController();
-        controllers.put(instanceId, controller);
+        try {
+            InventoryController controller = preset.controller().getConstructor().newInstance();
+            controllers.put(instanceId, controller);
+        } catch (NoSuchMethodException | InstantiationException | IllegalAccessException | InvocationTargetException e) {
+            plugin.getSLF4JLogger().error(
+                    "Failed to instantiate controller class for inventory with id {}: {}", id, e.getMessage());
+            plugin.getSLF4JLogger().warn("Make sure that the controller class has a public no-args constructor");
+        }
     }
     
     Map<UUID, InventoryController> getActiveControllers() {
         return controllers;
+    }
+    
+    InventoryController getControllerForPlayer(HumanEntity player) {
+        return controllers.get(player.getUniqueId());
     }
 }

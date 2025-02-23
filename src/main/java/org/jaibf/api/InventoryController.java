@@ -1,7 +1,13 @@
 package org.jaibf.api;
 
+import org.bukkit.Material;
 import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.ItemStack;
 import org.jaibf.api.container.ReadonlyContainerPreset;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.lang.reflect.Field;
 
 /**
  * Base class for handling all inventory events. It is bound to each of inventory's
@@ -22,7 +28,7 @@ import org.jaibf.api.container.ReadonlyContainerPreset;
  * </p>
  */
 public abstract class InventoryController {
-    
+    public static final Logger logger = LoggerFactory.getLogger(InventoryController.class);
     private ReadonlyContainerPreset containerPreset;
     private Inventory bukkitInventory;
     private String pageId;
@@ -32,7 +38,7 @@ public abstract class InventoryController {
      * @param id The id of the page to set
      * @return {@code true} if the page was set successfully, {@code false} otherwise
      */
-    public boolean setPage(String id) {
+    public final boolean setPage(String id) {
         if (containerPreset.pages().stream().anyMatch(page -> page.id().equals(id))) {
             pageId = id;
             return true;
@@ -44,11 +50,11 @@ public abstract class InventoryController {
      * Gets the current page id of the inventory.
      * @return The current page id of the inventory
      */
-    public String getPage() {
+    public final String getPage() {
         return pageId;
     }
 
-    public void setContainerPreset(ReadonlyContainerPreset containerPreset) {
+    public final void setContainerPreset(ReadonlyContainerPreset containerPreset) {
         if (this.containerPreset != null) {
             throw new IllegalStateException("Container preset can be only set during initialization");
         }
@@ -67,5 +73,36 @@ public abstract class InventoryController {
             bukkitInventory.clear();
             bukkitInventory.setItem(slotIndex, item.itemStack());
         }
+
+        for (Field field : getClass().getFields()) {
+            if (field.isAnnotationPresent(Slot.class)) {
+                Slot slot = field.getAnnotation(Slot.class);
+                try {
+                    if (slot.page().isEmpty()) {
+                        if (field.getType() == Material.class)
+                            field.set(this, page.getItemById(slot.value()).getType());
+                        else if (field.getType() == ItemStack.class)
+                            field.set(this, page.getItemById(slot.value()));
+                    } else {
+                        if (slot.page().equals(pageId)) {
+                            if (field.getType() == Material.class)
+                                field.set(this, page.getItemById(slot.value()).getType());
+                            else if (field.getType() == ItemStack.class)
+                                field.set(this, page.getItemById(slot.value()));
+                        }
+                    }
+                } catch (IllegalAccessException e) {
+                    logger.error("Failed to set field {} in controller {}: {}", field.getName(), getClass().getName(), e.getMessage());
+                }
+            }
+        }
+    }
+
+    public final Inventory getBukkitInventory() {
+        return bukkitInventory;
+    }
+
+    final ReadonlyContainerPreset getContainerPreset() {
+        return containerPreset;
     }
 }
