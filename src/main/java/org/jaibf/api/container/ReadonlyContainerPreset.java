@@ -69,7 +69,9 @@ public record ReadonlyContainerPreset(String id, String title, Class<InventoryCo
     }
     
     public static ReadonlyContainerPreset from(Document document) {
+
         Class<InventoryController> controllerClass;
+
         try {
             controllerClass = (Class<InventoryController>) Class.forName(document.getDocumentElement().getAttribute("class"));
         } catch (ClassNotFoundException e) {
@@ -86,7 +88,7 @@ public record ReadonlyContainerPreset(String id, String title, Class<InventoryCo
             String pageId = pageElement.getAttribute("id");
 
             List<PageItem> itemList = new ArrayList<>();
-            NodeList itemNodes = pageElement.getElementsByTagName("PageItem");
+            NodeList itemNodes = pageElement.getElementsByTagName("Item");
             for (int j = 0; j < itemNodes.getLength(); j++) {
                 Element itemElement = (Element) itemNodes.item(j);
                 String itemId = itemElement.getAttribute("id");
