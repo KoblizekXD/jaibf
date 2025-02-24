@@ -45,6 +45,7 @@ public final class InventoryManager {
         plugin.getServer().getPluginManager().registerEvents(new PluginInventoryEvents(inventoryManager, plugin), plugin);
         return inventoryManager;
     }
+    
     public void loadInventories(String... names) {
         try {
             DocumentBuilder documentBuilder = DocumentBuilderFactory.newInstance().newDocumentBuilder();

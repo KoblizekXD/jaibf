@@ -45,6 +45,10 @@ public record ReadonlyContainerPreset(String id, String title, Class<InventoryCo
                     .orElse(null);
         }
         
+        public PageItem getPageItemAt(int x, int y) {
+            return Arrays.stream(items).filter(item -> item.x() == x && item.y() == y).findFirst().orElse(null);
+        }
+        
         public ItemStack getItemById(String id) {
             return Arrays.stream(items).filter(item -> item.id().equals(id)).findFirst()
                     .map(PageItem::itemStack)
