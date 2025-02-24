@@ -3,6 +3,8 @@ package org.jaibf.api;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.HumanEntity;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jaibf.api.container.ReadonlyContainerPreset;
@@ -99,6 +101,16 @@ public final class InventoryManager {
             plugin.getSLF4JLogger().error(
                     "Failed to instantiate controller class for inventory with id {}: {}", id, e.getMessage());
             plugin.getSLF4JLogger().warn("Make sure that the controller class has a public no-args constructor");
+        }
+    }
+
+    @EventHandler
+    public void onInventoryClose(InventoryCloseEvent event) {
+        HumanEntity player = event.getPlayer();
+        UUID playerID = player.getUniqueId();
+        if(controllers.containsKey(playerID)) {
+            controllers.remove(playerID);
+            logger.debug("Inventory controller removed for player {}", player.getName());
         }
     }
     

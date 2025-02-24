@@ -69,7 +69,6 @@ public record ReadonlyContainerPreset(String id, String title, Class<InventoryCo
     }
     
     public static ReadonlyContainerPreset from(Document document) {
-
         Class<InventoryController> controllerClass;
 
         try {
