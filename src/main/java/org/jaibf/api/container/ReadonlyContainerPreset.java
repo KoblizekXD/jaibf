@@ -1,7 +1,9 @@
 package org.jaibf.api.container;
 
+import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 import org.jaibf.api.InventoryController;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -99,6 +101,12 @@ public record ReadonlyContainerPreset(String id, String title, Class<InventoryCo
                     throw new RuntimeException("Invalid material" + itemElement.getAttribute("material"));
                 }
                 ItemStack itemStack = new ItemStack(material);
+                ItemMeta itemMeta = itemStack.getItemMeta();
+                itemMeta.itemName(MiniMessage.miniMessage().deserialize(itemElement.getAttribute("title")));
+                itemMeta.lore(Arrays.stream(itemElement.getAttribute("lore").split("\n"))
+                        .map(MiniMessage.miniMessage()::deserialize)
+                        .toList());
+                itemStack.setItemMeta(itemMeta);
 
                 itemList.add(new PageItem(itemId, x, y, onClick, itemStack));
             }

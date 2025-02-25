@@ -11,6 +11,8 @@
                                     <xs:choice minOccurs="0" maxOccurs="unbounded">
                                         <xs:any processContents="lax" />
                                     </xs:choice>
+                                    <xs:attribute name="title" type="xs:string" />
+                                    <xs:attribute name="lore" type="xs:string" />
                                     <xs:attribute name="id" type="xs:string" />
                                     <xs:attribute name="material" type="xs:string" use="required" />
                                     <xs:attribute name="x" default="0">

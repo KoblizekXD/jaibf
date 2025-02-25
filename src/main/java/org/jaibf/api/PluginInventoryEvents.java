@@ -55,6 +55,7 @@ class PluginInventoryEvents implements Listener {
                 .findPageById(controller.getPage())
                 .getPageItemAt(x, y);
         if (pageItem.onClick() != null) {
+            event.setCancelled(true);
             try {
                 Method method = controller.getClass().getMethod(pageItem.onClick(), InventoryClickEvent.class);
                 method.invoke(controller, event);

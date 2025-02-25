@@ -1,6 +1,6 @@
 package org.jaibf.api;
 
-import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.event.EventHandler;
@@ -92,7 +92,7 @@ public final class InventoryManager implements Listener {
         UUID instanceId = entity.getUniqueId();
         try {
             InventoryController controller = preset.controller().getConstructor().newInstance();
-            Inventory inventory = Bukkit.createInventory(entity, preset.height() * 9, Component.text(preset.title()));
+            Inventory inventory = Bukkit.createInventory(entity, preset.height() * 9, MiniMessage.miniMessage().deserialize(preset.title()));
             controller.setContainerPreset(preset);
             controller.setBukkitInventory(inventory);
             controller.reloadCurrent();
