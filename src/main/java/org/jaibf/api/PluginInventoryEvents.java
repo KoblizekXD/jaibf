@@ -1,5 +1,6 @@
 package org.jaibf.api;
 
+import org.bukkit.entity.HumanEntity;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
@@ -10,6 +11,8 @@ import org.jaibf.api.container.ReadonlyContainerPreset;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.Map;
+import java.util.UUID;
 
 class PluginInventoryEvents implements Listener {
     private final InventoryManager inventoryManager;
@@ -19,14 +22,7 @@ class PluginInventoryEvents implements Listener {
         this.inventoryManager = inventoryManager;
         this.plugin = plugin;
     }
-    
-    @EventHandler
-    public void onInventoryClosed(InventoryCloseEvent event) {
-        InventoryController inventoryController = inventoryManager.getActiveControllers().get(event.getPlayer().getUniqueId());
-        if (inventoryController == null) return;
-        inventoryManager.getActiveControllers().remove(event.getPlayer().getUniqueId());
-    }
-    
+
     @EventHandler
     public void onInventoryOpen(InventoryOpenEvent event) {
         InventoryController controller = inventoryManager.getControllerForPlayer(event.getPlayer());
@@ -43,6 +39,28 @@ class PluginInventoryEvents implements Listener {
             plugin.getSLF4JLogger().error("Failed to invoke method {}(for event onOpen) in controller {}: {}", openMethod, 
                     controller.getClass().getName(), e.getMessage());
         } 
+    }
+
+    @EventHandler
+    public void onInventoryClosed(InventoryCloseEvent event) {
+        HumanEntity player = event.getPlayer();
+        InventoryController controller = inventoryManager.getControllerForPlayer(player);
+        Map<UUID, InventoryController> controllers = inventoryManager.getActiveControllers();
+        if (controller == null) return;
+        controllers.remove(player.getUniqueId());
+        plugin.getSLF4JLogger().debug("Inventory controller removed for player {}", player.getName());
+        String closeMethod = controller.getContainerPreset().onClose();
+        if (closeMethod == null) return;
+        try {
+            Method method = controller.getClass().getMethod(closeMethod, InventoryCloseEvent.class);
+            method.invoke(controller, event);
+        } catch (NoSuchMethodException e) {
+            plugin.getSLF4JLogger().warn("Method {}(for event onClose) was not found in controller {}", closeMethod,
+                    controller.getClass().getName());
+        } catch (InvocationTargetException | IllegalAccessException e) {
+            plugin.getSLF4JLogger().error("Failed to invoke method {}(for event onClose) in controller {}: {}", closeMethod,
+                    controller.getClass().getName(), e.getMessage());
+        }
     }
     
     @EventHandler
